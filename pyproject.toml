@@ -6,7 +6,8 @@ authors = [{name = "Sarvesh Mhadgut", email = "sarveshmhadgut@icloud.com"}]
 dynamic = ["dependencies"]
 
 [tool.setuptools]
-packages = {find = {}}
+package-dir = {"" = "src"}
+packages.find = {where = ["src"]}
 
 [tool.setuptools.dynamic]
-dependencies = {file = "requirements.txt"}
+dependencies = {file = ["requirements.txt"]}
