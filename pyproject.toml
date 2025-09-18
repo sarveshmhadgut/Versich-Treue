@@ -1,0 +1,12 @@
+[project]
+name = "src"
+version = "0.0.1"
+description = "MLOps Vehicle Insurance Model"
+authors = [{name = "Sarvesh Mhadgut", email = "sarveshmhadgut@icloud.com"}]
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+packages = {find = {}}
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
