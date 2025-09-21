@@ -4,7 +4,7 @@ catppuccin
 certifi
 colorlog
 dill
-dotenv
+python-dotenv
 fastapi
 from_root
 imblearn

@@ -4,24 +4,21 @@ import colorlog
 from typing import Callable
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
+from from_root import from_root
 
 
-# Fallback if from_root is unavailable (returns current working directory; replace with your actual import)
 def fallback_from_root() -> str:
     return os.getcwd()
 
 
 # Uncomment the line below if your from_root works; otherwise use fallback
-# from from_root import from_root  # type: Callable[[], str]
-from_root: Callable[[], str] = fallback_from_root  # Use fallback for testing
+# from_root: Callable[[], str] = fallback_from_root
 
-# Initializing variables
 LOGS_DIR: str = "logs"
 LOG_FILE_FORMAT: str = f"{datetime.now().strftime('%d-%b-%y_%H:%M:%S')}.log"
 maxBytes: int = 5 * 1024 * 1024  # 5 MB
 backupCount: int = 4
 
-# Full path to the logs directory, created if it doesn't exist
 logs_dirpath: str = os.path.join(from_root(), LOGS_DIR)
 os.makedirs(logs_dirpath, exist_ok=True)
 log_filepath: str = os.path.join(logs_dirpath, LOG_FILE_FORMAT)
@@ -42,11 +39,9 @@ def config_logger() -> None:
     Raises:
         Any exceptions from handler initialization (e.g., file permission issues).
     """
-    # Get the root logger
     logger: logging.Logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
-    # Formatter for file and console logs
     file_format: logging.Formatter = logging.Formatter(
         "[ %(asctime)s ] %(name)s - %(levelname)s - %(message)s"
     )
@@ -64,20 +59,17 @@ def config_logger() -> None:
     )
 
     if not logger.handlers:
-        # Set up console handler
         console_handler: logging.StreamHandler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(console_format)
         logger.addHandler(console_handler)
 
-        # Set up rotating file handler with explicit encoding
         file_handler: RotatingFileHandler = RotatingFileHandler(
             log_filepath, maxBytes=maxBytes, backupCount=backupCount, encoding="utf-8"
         )
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(file_format)
         logger.addHandler(file_handler)
 
 
-# Initialize the logger configuration
 config_logger()
