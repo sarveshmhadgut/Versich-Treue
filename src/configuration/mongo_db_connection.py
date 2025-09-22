@@ -27,7 +27,7 @@ class MongoDBClient:
         """
         try:
             if MongoDBClient.client is None:
-
+                print()
                 logging.info("Connecting to MongoDB client...")
                 connection_url: str = os.getenv(MONGODB_CONNECTION_URL)
 
@@ -42,6 +42,7 @@ class MongoDBClient:
                 )
                 logging.info("MongoDB client initialized successfully.")
 
+            print()
             logging.info(f"Connecting to database...")
             self.client: Any = MongoDBClient.client
             self.database: Any = self.client[database_name]
@@ -49,4 +50,4 @@ class MongoDBClient:
             logging.info(f"Connected to database: {database_name}")
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e

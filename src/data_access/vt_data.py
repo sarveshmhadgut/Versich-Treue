@@ -21,7 +21,7 @@ class VTData:
             logging.info("MongoDB client initialized (VTData) successfully.")
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e
 
     def export_collection_as_dataframe(
         self, collection_name: str, database_name: Optional[str] = None
@@ -70,4 +70,4 @@ class VTData:
             return df
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e

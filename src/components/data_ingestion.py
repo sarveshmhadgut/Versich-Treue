@@ -32,7 +32,7 @@ class DataIngestion:
             logging.info("Data ingestion configured successfully.")
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e
 
     def export_data_to_feature_store(self) -> DataFrame:
         """
@@ -62,7 +62,7 @@ class DataIngestion:
             return df
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e
 
     def train_test_splitting(self, df: DataFrame) -> None:
         """
@@ -89,7 +89,7 @@ class DataIngestion:
             logging.info(f"Training and testing data created successfully")
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e
 
     def initiate_data_ingestion(self) -> DataIngestionArtifacts:
         """
@@ -106,7 +106,7 @@ class DataIngestion:
             if df is None or df.empty:
                 raise MyException("Exported dataframe is empty")
 
-            self.train_test_splitting(df)
+            self.train_test_splitting(df=df)
 
             data_ingestion_artifacts = DataIngestionArtifacts(
                 train_filepath=self.data_ingestion_config.train_data_filepath,
@@ -116,4 +116,4 @@ class DataIngestion:
             return data_ingestion_artifacts
 
         except Exception as e:
-            raise MyException(e, sys)
+            raise MyException(e, sys) from e
