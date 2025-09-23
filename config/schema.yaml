@@ -27,3 +27,30 @@ categorical_features:
 - Gender
 - Vehicle_Age
 - Vehicle_Damage
+
+target_features:
+- Response
+
+drop_features:
+- id
+
+rename_features:
+- "Vehicle_Age_> 2 Year$Vehicle_Age_gt_2_Year"
+
+label_encoding_features:
+- Gender
+- Vehicle_Damage
+
+onehot_encoding_features:
+- Vehicle_Age
+
+standardization_features:
+- Age
+- Driving_License
+- Region_Code
+- Previously_Insured
+- Policy_Sales_Channel
+- Vintage
+
+mormalization_features:
+- Annual_Premium

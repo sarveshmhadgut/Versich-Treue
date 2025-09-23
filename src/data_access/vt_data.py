@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from halo import Halo
 from pandas import DataFrame
 from src.logger import logging
 from typing import Optional, Any
@@ -18,7 +19,6 @@ class VTData:
         """
         try:
             self.client: MongoDBClient = MongoDBClient(database_name=DATABASE_NAME)
-            logging.info("MongoDB client initialized (VTData) successfully.")
 
         except Exception as e:
             raise MyException(e, sys) from e
@@ -40,6 +40,7 @@ class VTData:
             MyException: If data retrieval or conversion fails.
         """
         try:
+
             if database_name is None:
                 collection: Any = self.client.database[collection_name]
                 logging.info(
@@ -53,16 +54,15 @@ class VTData:
                     f"Using database '{database_name}' to access collection '{collection_name}'."
                 )
 
-            data: list = list(collection.find())
-            logging.info(
-                f"{len(data)} records fetched from collection '{collection_name}'."
-            )
+            with Halo(text="Fetching records...", spinner="dots") as spinner:
+                data: list = list(collection.find())
 
             df: DataFrame = DataFrame(data)
+            logging.info(f"Records fetched with shape: {df.shape}")
 
             if "_id" in df.columns:
                 df.drop(columns=["_id"], inplace=True, axis=1)
-                logging.info("'_id' dropped  column from DataFrame.")
+                logging.info("'_id'dropped  column from DataFrame.")
 
             df.replace({"na": np.nan}, inplace=True)
             logging.info("'na' replaced with np.nan in DataFrame.")

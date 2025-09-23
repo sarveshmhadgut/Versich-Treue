@@ -1,13 +1,12 @@
 import os
 import sys
-from pandas import read_csv
 from src.logger import logging
 from json import dump as json_dump
 from src.exception import MyException
 from src.constants import SCHEMA_FILEPATH
-from src.utils.main_utils import read_yaml_file
-from src.entity.artifact_entity import DataIngestionArtifacts, DataValidationArtifacts
 from src.entity.config_entity import DataValidationConfig
+from src.utils.main_utils import read_yaml_file, read_csv_file
+from src.entity.artifact_entity import DataIngestionArtifacts, DataValidationArtifacts
 
 
 class DataValidation:
@@ -31,22 +30,8 @@ class DataValidation:
         self.data_ingestion_artifacts = data_ingestion_artifacts
         self.data_validation_config = data_validation_config
         self.schema_config = read_yaml_file(filepath=SCHEMA_FILEPATH)
-        logging.info("Schema config loaded for data validation.")
 
-    @staticmethod
-    def read_data(filepath: str):
-        """
-        Read a CSV data file into a pandas DataFrame.
-
-        Args:
-            filepath (str): Path of the CSV file.
-
-        Returns:
-            pandas.DataFrame: Loaded dataset.
-        """
-        return read_csv(filepath)
-
-    def features_count_validate(self, df) -> bool:
+    def _features_count_validate(self, df) -> bool:
         """
         Validate that dataset contains expected number of features.
 
@@ -56,16 +41,12 @@ class DataValidation:
         Returns:
             bool: True if feature count matches schema, else False.
         """
-        expected_num_features = len(self.schema_config["features"])
+        expected_num_features = len(self.schema_config.get("features", []))
         actual_num_features = len(df.columns)
         status = actual_num_features == expected_num_features
-
-        logging.info(
-            f"Feature count validation: expected={expected_num_features}, actual={actual_num_features}, status={status}"
-        )
         return status
 
-    def features_exist(self, df) -> bool:
+    def _features_exist(self, df) -> bool:
         """
         Check that all required numerical and categorical features exist in the dataset.
 
@@ -89,13 +70,6 @@ class DataValidation:
             if feature not in df_features
         ]
 
-        if missing_numerical_features:
-            logging.warning(f"Missing numerical features: {missing_numerical_features}")
-        if missing_categorical_features:
-            logging.warning(
-                f"Missing categorical features: {missing_categorical_features}"
-            )
-
         all_features_exist = (
             len(missing_numerical_features) == 0
             and len(missing_categorical_features) == 0
@@ -113,41 +87,60 @@ class DataValidation:
             MyException: For any errors during validation.
         """
         try:
+            logging.info("Data validation process started...")
             data_validation_message = ""
 
-            train_df = self.read_data(
+            logging.info("Reading training data.")
+            train_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.train_filepath
             )
-            test_df = self.read_data(
+            logging.info("Training data read.")
+
+            logging.info("Reading esting data.")
+            test_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.test_filepath
             )
+            logging.info("Testing data read.")
 
-            if not self.features_count_validate(train_df):
+            logging.info("Validating training data...")
+            if not self._features_count_validate(train_df):
                 msg = "Training data feature count mismatch with schema."
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
+            else:
+                logging.info("Training data feature count matches schema.")
 
-            if not self.features_exist(train_df):
+            if not self._features_exist(train_df):
                 msg = "Training data missing required numerical/categorical features."
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
+            else:
+                logging.info("All required features exist in training data.")
+            logging.info("Training data validated.")
 
-            if not self.features_count_validate(test_df):
+            logging.info("Validating testing data...")
+            if not self._features_count_validate(test_df):
                 msg = "Test data feature count mismatch with schema."
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
+            else:
+                logging.info("Testing data feature count matches schema.")
 
-            if not self.features_exist(test_df):
+            if not self._features_exist(test_df):
                 msg = "Test data missing required numerical/categorical features."
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
+            else:
+                logging.info("All required features exist in testing data.")
+            logging.info("Testing data validated.")
 
             data_validation_status = len(data_validation_message) == 0
             if data_validation_status:
-                logging.info("Data validation passed")
+                logging.info("Data validation passed.")
             else:
                 logging.warning("Data validation failed!")
 
+            logging.info("Drafing and saving data validation report...")
             data_validation_report = {
                 "data_validation_status": data_validation_status,
                 "data_validation_message": data_validation_message.strip(),
@@ -162,6 +155,7 @@ class DataValidation:
                 self.data_validation_config.data_validation_reports_filepath, "w"
             ) as f:
                 json_dump(obj=data_validation_report, fp=f, indent=4)
+            logging.info("Data validation report saved.")
 
             return DataValidationArtifacts(
                 data_validation_status=data_validation_status,

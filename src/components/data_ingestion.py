@@ -4,6 +4,7 @@ from pandas import DataFrame
 from src.logger import logging
 from src.exception import MyException
 from src.data_access.vt_data import VTData
+from src.utils.main_utils import save_df_as_csv
 from sklearn.model_selection import train_test_split
 from src.entity.config_entity import DataIngestionConfig
 from src.entity.artifact_entity import DataIngestionArtifacts
@@ -29,12 +30,11 @@ class DataIngestion:
         """
         try:
             self.data_ingestion_config: DataIngestionConfig = data_ingestion_config
-            logging.info("Data ingestion configured successfully.")
 
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def export_data_to_feature_store(self) -> DataFrame:
+    def _export_data_to_feature_store(self) -> DataFrame:
         """
         Export data from MongoDB collection to a CSV file in the feature store.
 
@@ -56,15 +56,14 @@ class DataIngestion:
                 self.data_ingestion_config.feature_store_dirpath, "data.csv"
             )
 
-            df.to_csv(feature_store_path, index=False)
-            logging.info(f"Feature store data fetched and stored successfully")
+            save_df_as_csv(df=df, filepath=feature_store_path, index=False)
 
             return df
 
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def train_test_splitting(self, df: DataFrame) -> None:
+    def _train_test_splitting(self, df: DataFrame) -> None:
         """
         Split the dataframe into train and test datasets and save them as CSV files.
 
@@ -83,10 +82,8 @@ class DataIngestion:
             train_path: str = self.data_ingestion_config.train_data_filepath
             test_path: str = self.data_ingestion_config.test_data_filepath
 
-            train_data.to_csv(train_path, index=False, header=True)
-            test_data.to_csv(test_path, index=False, header=True)
-
-            logging.info(f"Training and testing data created successfully")
+            save_df_as_csv(df=train_data, filepath=train_path, index=False, header=True)
+            save_df_as_csv(df=test_data, filepath=test_path, index=False, header=True)
 
         except Exception as e:
             raise MyException(e, sys) from e
@@ -102,17 +99,25 @@ class DataIngestion:
             MyException: If any step in the ingestion process fails.
         """
         try:
-            df: DataFrame = self.export_data_to_feature_store()
-            if df is None or df.empty:
-                raise MyException("Exported dataframe is empty")
+            logging.info("Starting data ingestion process...")
 
-            self.train_test_splitting(df=df)
+            df: DataFrame = self._export_data_to_feature_store()
+
+            if df is None or df.empty:
+                error_msg = "Exported dataframe is empty."
+                logging.error(error_msg)
+                raise MyException(error_msg)
+            logging.info(f"Exported data to feature store with shape {df.shape}.")
+
+            self._train_test_splitting(df=df)
+            logging.info("Train-test splitting completed.")
 
             data_ingestion_artifacts = DataIngestionArtifacts(
                 train_filepath=self.data_ingestion_config.train_data_filepath,
                 test_filepath=self.data_ingestion_config.test_data_filepath,
             )
-            logging.info("Data ingestion artifacts created successfully.")
+
+            logging.info("Data ingestion process completed.")
             return data_ingestion_artifacts
 
         except Exception as e:

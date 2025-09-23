@@ -27,8 +27,7 @@ class MongoDBClient:
         """
         try:
             if MongoDBClient.client is None:
-                print()
-                logging.info("Connecting to MongoDB client...")
+                logging.info("Setting up MongoDB client...")
                 connection_url: str = os.getenv(MONGODB_CONNECTION_URL)
 
                 if connection_url is None:
@@ -40,13 +39,12 @@ class MongoDBClient:
                 MongoDBClient.client: pymongo.MongoClient = pymongo.MongoClient(
                     connection_url, tlsCAFile=ca
                 )
-                logging.info("MongoDB client initialized successfully.")
+                logging.info("MongoDB client initialized .")
 
-            print()
-            logging.info(f"Connecting to database...")
             self.client: Any = MongoDBClient.client
-            self.database: Any = self.client[database_name]
+            logging.info("Connected to client")
 
+            self.database: Any = self.client[database_name]
             logging.info(f"Connected to database: {database_name}")
 
         except Exception as e:

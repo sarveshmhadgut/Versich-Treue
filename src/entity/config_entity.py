@@ -1,9 +1,7 @@
 import os
 from src.constants import *
 from dataclasses import dataclass, field
-from datetime import datetime
-
-TIMESTAMP: str = datetime.now().strftime("%d-%b-%y_%H:%M:%S")
+from src.utils.main_utils import get_current_timestamp
 
 
 @dataclass
@@ -18,9 +16,9 @@ class TrainingPipelineConfig:
     """
 
     pipeline_name: str = field(default=PIPELINE_NAME)
-    timestamp: str = field(default=TIMESTAMP)
+    timestamp: str = field(default_factory=get_current_timestamp)
     artifact_dirpath: str = field(
-        default_factory=lambda: os.path.join(ARTIFACT_PATHNAME, TIMESTAMP)
+        default_factory=lambda: os.path.join(ARTIFACT_PATHNAME, get_current_timestamp())
     )
 
 
@@ -97,4 +95,46 @@ class DataValidationConfig:
         )
         self.data_validation_reports_filepath = os.path.join(
             self.data_validation_reports_dirpath, DATA_VALIDATION_REPORT_FILENAME
+        )
+
+
+@dataclass
+class DataTransformationConfig:
+    """
+    Data class for configuration related to data transformation.
+
+    Attributes:
+        data_transformation_dirpath (str): Base directory for data transformation artifacts.
+        data_transformation_transformed_data_dirpath (str): Directory for transformed data numpy arrays.
+        data_transformation_object_filepath (str): File path for the serialized transformation object.
+        data_transformation_train_array_filepath (str): File path for transformed training dataset numpy array.
+        data_transformation_test_array_filepath (str): File path for transformed test dataset numpy array.
+    """
+
+    data_transformation_dirpath: str = field(
+        default_factory=lambda: os.path.join(
+            training_pipeline_config.artifact_dirpath, DATA_TRANSFORMATION_DIRNAME
+        )
+    )
+    data_transformation_transformed_data_dirpath: str = field(init=False)
+    data_transformation_object_filepath: str = field(init=False)
+    data_transformation_train_array_filepath: str = field(init=False)
+    data_transformation_test_array_filepath: str = field(init=False)
+
+    def __post_init__(self):
+        self.data_transformation_transformed_data_dirpath = os.path.join(
+            self.data_transformation_dirpath,
+            DATA_TRANSFORMATION_TRANSFORMED_DATA_DIRPATH,
+        )
+        self.data_transformation_object_filepath = os.path.join(
+            self.data_transformation_transformed_data_dirpath,
+            DATA_TRANSFORMATION_OBJECT_FILENAME,
+        )
+        self.data_transformation_train_array_filepath = os.path.join(
+            self.data_transformation_transformed_data_dirpath,
+            TRAIN_DATA_FILENAME.replace("csv", "npy"),
+        )
+        self.data_transformation_test_array_filepath = os.path.join(
+            self.data_transformation_transformed_data_dirpath,
+            TEST_DATA_FILENAME.replace("csv", "npy"),
         )
