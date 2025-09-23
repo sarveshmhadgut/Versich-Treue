@@ -27,7 +27,6 @@ class MongoDBClient:
         """
         try:
             if MongoDBClient.client is None:
-                logging.info("Setting up MongoDB client...")
                 connection_url: str = os.getenv(MONGODB_CONNECTION_URL)
 
                 if connection_url is None:

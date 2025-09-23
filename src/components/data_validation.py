@@ -5,7 +5,7 @@ from json import dump as json_dump
 from src.exception import MyException
 from src.constants import SCHEMA_FILEPATH
 from src.entity.config_entity import DataValidationConfig
-from src.utils.main_utils import read_yaml_file, read_csv_file
+from src.utils.main_utils import read_yaml_file, read_csv_file, save_as_json
 from src.entity.artifact_entity import DataIngestionArtifacts, DataValidationArtifacts
 
 
@@ -87,22 +87,17 @@ class DataValidation:
             MyException: For any errors during validation.
         """
         try:
-            logging.info("Data validation process started...")
             data_validation_message = ""
 
-            logging.info("Reading training data.")
             train_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.train_filepath
             )
-            logging.info("Training data read.")
 
-            logging.info("Reading esting data.")
             test_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.test_filepath
             )
-            logging.info("Testing data read.")
+            logging.info("Training & testing data read.")
 
-            logging.info("Validating training data...")
             if not self._features_count_validate(train_df):
                 msg = "Training data feature count mismatch with schema."
                 logging.warning(msg)
@@ -115,10 +110,9 @@ class DataValidation:
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
             else:
-                logging.info("All required features exist in training data.")
+                logging.info("Required features exist in training data.")
             logging.info("Training data validated.")
 
-            logging.info("Validating testing data...")
             if not self._features_count_validate(test_df):
                 msg = "Test data feature count mismatch with schema."
                 logging.warning(msg)
@@ -131,7 +125,7 @@ class DataValidation:
                 logging.warning(msg)
                 data_validation_message += msg + "\n"
             else:
-                logging.info("All required features exist in testing data.")
+                logging.info("Required features exist in testing data.")
             logging.info("Testing data validated.")
 
             data_validation_status = len(data_validation_message) == 0
@@ -140,7 +134,6 @@ class DataValidation:
             else:
                 logging.warning("Data validation failed!")
 
-            logging.info("Drafing and saving data validation report...")
             data_validation_report = {
                 "data_validation_status": data_validation_status,
                 "data_validation_message": data_validation_message.strip(),
@@ -151,10 +144,11 @@ class DataValidation:
             )
             os.makedirs(data_validation_report_dir, exist_ok=True)
 
-            with open(
-                self.data_validation_config.data_validation_reports_filepath, "w"
-            ) as f:
-                json_dump(obj=data_validation_report, fp=f, indent=4)
+            save_as_json(
+                data=data_validation_report,
+                filepath=self.data_validation_config.data_validation_reports_filepath,
+                indent=4,
+            )
             logging.info("Data validation report saved.")
 
             return DataValidationArtifacts(

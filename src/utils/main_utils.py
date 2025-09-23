@@ -1,7 +1,9 @@
 import os
 import sys
+import json
 from typing import Any
 from yaml import safe_load
+from datetime import datetime
 from src.logger import logging
 from src.exception import MyException
 from pandas import read_csv, DataFrame
@@ -9,8 +11,17 @@ from dill import load as dill_load, dump as dill_dump
 from numpy import load as numpy_load, save as numpy_save
 
 
+def get_current_timestamp() -> str:
+    """
+    Get the current timestamp formatted as 'day-month-year_hour-minute-second'.
 
-def read_csv_file(filepath: str) -> DataFrame:
+    Returns:
+        str: Formatted current timestamp.
+    """
+    return datetime.now().strftime("%d-%b-%y_%H-%M-%S")
+
+
+def read_csv_file(filepath: str, **kwargs) -> DataFrame:
     """
     Read a CSV file into a pandas DataFrame.
 
@@ -24,7 +35,7 @@ def read_csv_file(filepath: str) -> DataFrame:
         MyException: If reading the CSV file fails.
     """
     try:
-        data = read_csv(filepath)
+        data = read_csv(filepath, **kwargs)
         return data
 
     except Exception as e:
@@ -51,7 +62,7 @@ def save_df_as_csv(df: DataFrame, filepath: str, **kwargs) -> None:
         raise MyException(e, sys) from e
 
 
-def read_yaml_file(filepath: str) -> Any:
+def read_yaml_file(filepath: str, **kwargs) -> Any:
     """
     Read and parse a YAML file safely.
 
@@ -66,14 +77,14 @@ def read_yaml_file(filepath: str) -> Any:
     """
     try:
         with open(filepath, "r") as f:
-            data = safe_load(f)
+            data = safe_load(f, **kwargs)
         return data
 
     except Exception as e:
         raise MyException(e, sys) from e
 
 
-def load_object(filepath: str) -> Any:
+def load_object(filepath: str, **kwargs) -> Any:
     """
     Load a Python object using dill from a file.
 
@@ -88,14 +99,14 @@ def load_object(filepath: str) -> Any:
     """
     try:
         with open(filepath, "rb") as f:
-            obj = dill_load(f)
+            obj = dill_load(f, **kwargs)
         return obj
 
     except Exception as e:
         raise MyException(e, sys) from e
 
 
-def save_object(obj: Any, filepath: str) -> None:
+def save_object(obj: Any, filepath: str, **kwargs) -> None:
     """
     Save a Python object to file using dill.
 
@@ -109,14 +120,14 @@ def save_object(obj: Any, filepath: str) -> None:
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as f:
-            dill_dump(obj, f)
+            dill_dump(obj, f, **kwargs)
 
     except Exception as e:
         logging.error(f"Error saving object: {e}")
         raise MyException(e, sys) from e
 
 
-def load_numpy_array(filepath: str) -> Any:
+def load_numpy_array(filepath: str, **kwargs) -> Any:
     """
     Load a NumPy array from a binary file.
 
@@ -130,7 +141,7 @@ def load_numpy_array(filepath: str) -> Any:
         MyException: If loading fails.
     """
     try:
-        with open(filepath, "rb") as f:
+        with open(filepath, "rb", **kwargs) as f:
             arr = numpy_load(f)
 
         return arr
@@ -140,7 +151,7 @@ def load_numpy_array(filepath: str) -> Any:
         raise MyException(e, sys) from e
 
 
-def save_numpy_array(np_array: Any, filepath: str) -> None:
+def save_numpy_array(np_array: Any, filepath: str, **kwargs) -> None:
     """
     Save a NumPy array to a binary file.
 
@@ -154,7 +165,28 @@ def save_numpy_array(np_array: Any, filepath: str) -> None:
     try:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as f:
-            numpy_save(f, np_array)
+            numpy_save(f, np_array, **kwargs)
 
     except Exception as e:
+        raise MyException(e, sys) from e
+
+
+def save_as_json(data: dict, filepath: str, **kwargs) -> None:
+    """
+    Save a dictionary as a JSON file.
+
+    Args:
+        data (dict): Dictionary to save.
+        filepath (str): Location where the JSON file will be saved.
+        **kwargs: Additional keyword arguments for json.dump().
+
+    Raises:
+        MyException: If saving fails.
+    """
+    try:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, "w") as f:
+            json.dump(data, f, **kwargs)
+    except Exception as e:
+        logging.error(f"Error saving dict as JSON: {e}")
         raise MyException(e, sys) from e

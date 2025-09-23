@@ -2,18 +2,8 @@ import os
 import logging
 import colorlog
 from from_root import from_root
+from src.utils.main_utils import get_current_timestamp
 from logging.handlers import RotatingFileHandler
-from datetime import datetime
-
-
-def get_current_timestamp() -> str:
-    """
-    Get the current timestamp formatted as 'day-month-year_hour-minute-second'.
-
-    Returns:
-        str: Formatted current timestamp.
-    """
-    return datetime.now().strftime("%d-%b-%y_%H-%M-%S")
 
 
 def fallback_from_root() -> str:
@@ -50,7 +40,7 @@ def config_logger() -> None:
         Any exceptions from handler initialization (e.g., file permission issues).
     """
     logger: logging.Logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     file_format: logging.Formatter = logging.Formatter(
         "[ %(asctime)s ] %(name)s - %(levelname)s - %(message)s"

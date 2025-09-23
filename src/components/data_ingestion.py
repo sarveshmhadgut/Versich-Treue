@@ -46,7 +46,6 @@ class DataIngestion:
         """
         try:
             data: VTData = VTData()
-
             df: DataFrame = data.export_collection_as_dataframe(
                 collection_name=self.data_ingestion_config.collection_name
             )
@@ -99,8 +98,6 @@ class DataIngestion:
             MyException: If any step in the ingestion process fails.
         """
         try:
-            logging.info("Starting data ingestion process...")
-
             df: DataFrame = self._export_data_to_feature_store()
 
             if df is None or df.empty:

@@ -1,6 +1,6 @@
 import sys
-import numpy as np
 from halo import Halo
+from numpy import nan
 from pandas import DataFrame
 from src.logger import logging
 from typing import Optional, Any
@@ -54,7 +54,7 @@ class VTData:
                     f"Using database '{database_name}' to access collection '{collection_name}'."
                 )
 
-            with Halo(text="Fetching records...", spinner="dots") as spinner:
+            with Halo(text="Fetching records...", spinner="dots"):
                 data: list = list(collection.find())
 
             df: DataFrame = DataFrame(data)
@@ -64,7 +64,7 @@ class VTData:
                 df.drop(columns=["_id"], inplace=True, axis=1)
                 logging.info("'_id'dropped  column from DataFrame.")
 
-            df.replace({"na": np.nan}, inplace=True)
+            df.replace({"na": nan}, inplace=True)
             logging.info("'na' replaced with np.nan in DataFrame.")
 
             return df

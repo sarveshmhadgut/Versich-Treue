@@ -1,7 +1,8 @@
 import os
+from typing import Any
 from src.constants import *
 from dataclasses import dataclass, field
-from src.utils.main_utils import get_current_timestamp
+from src.utils.main_utils import get_current_timestamp, read_yaml_file
 
 
 @dataclass
@@ -91,10 +92,10 @@ class DataValidationConfig:
 
     def __post_init__(self):
         self.data_validation_reports_dirpath = os.path.join(
-            self.data_validation_dirpath, DATA_VALIDATION_REPORT_DIRNAME
+            self.data_validation_dirpath, REPORT_DIRNAME
         )
         self.data_validation_reports_filepath = os.path.join(
-            self.data_validation_reports_dirpath, DATA_VALIDATION_REPORT_FILENAME
+            self.data_validation_reports_dirpath, REPORT_FILENAME
         )
 
 
@@ -117,6 +118,7 @@ class DataTransformationConfig:
         )
     )
     data_transformation_transformed_data_dirpath: str = field(init=False)
+    data_transformation_object_dirpath: str = field(init=False)
     data_transformation_object_filepath: str = field(init=False)
     data_transformation_train_array_filepath: str = field(init=False)
     data_transformation_test_array_filepath: str = field(init=False)
@@ -126,15 +128,85 @@ class DataTransformationConfig:
             self.data_transformation_dirpath,
             DATA_TRANSFORMATION_TRANSFORMED_DATA_DIRPATH,
         )
+
+        self.data_transformation_object_dirpath = os.path.join(
+            self.data_transformation_dirpath, DATA_TRANSFORMATION_OBJECT_DIRNAME
+        )
+
         self.data_transformation_object_filepath = os.path.join(
-            self.data_transformation_transformed_data_dirpath,
+            self.data_transformation_object_dirpath,
             DATA_TRANSFORMATION_OBJECT_FILENAME,
         )
+
         self.data_transformation_train_array_filepath = os.path.join(
             self.data_transformation_transformed_data_dirpath,
             TRAIN_DATA_FILENAME.replace("csv", "npy"),
         )
+
         self.data_transformation_test_array_filepath = os.path.join(
             self.data_transformation_transformed_data_dirpath,
             TEST_DATA_FILENAME.replace("csv", "npy"),
         )
+
+
+@dataclass
+class ModelTrainingConfig:
+    """
+    Data class for configuration related to model training.
+
+    Attributes:
+        model_training_dirpath (str): Base directory for model training artifacts.
+        trained_model_dirpath (str): Directory where trained model is stored.
+        trained_model_filepath (str): File path for the serialized trained model.
+        report_filepath (str): File path for the classification metrics report.
+        threshold_accuracy (float): Minimum accuracy threshold for model acceptance.
+        training_model_params (dict): Dictionary containing all model hyperparameters.
+    """
+
+    model_training_dirpath: str = field(
+        default_factory=lambda: os.path.join(
+            training_pipeline_config.artifact_dirpath, MODEL_TRAINING_DIRNAME
+        )
+    )
+
+    trained_model_dirpath: str = field(init=False)
+    trained_model_filepath: str = field(init=False)
+    report_filepath: str = field(init=False)
+    threshold_accuracy: float = 0.5
+    training_model_params: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        self.trained_model_dirpath = os.path.join(
+            self.model_training_dirpath, TRAINED_MODEL_DIRNAME
+        )
+
+        self.report_dirpath = os.path.join(self.model_training_dirpath, REPORT_DIRNAME)
+
+        self.trained_model_filepath = os.path.join(
+            self.trained_model_dirpath, MODEL_FILENAME
+        )
+
+        self.report_filepath = os.path.join(self.report_dirpath, REPORT_FILENAME)
+
+        self.model_params = read_yaml_file(MODEL_PARAMS_FILEPATH) or {}
+        self.threshold_accuracy = self.model_params.get(
+            "threshold_accuracy", self.threshold_accuracy
+        )
+
+        self.training_model_params = {
+            "bootstrap": self.model_params.get("bootstrap", True),
+            "class_weight": self.model_params.get("class_weight", None),
+            "criterion": self.model_params.get("criterion", "gini"),
+            "max_depth": self.model_params.get("max_depth", None),
+            "max_features": self.model_params.get("max_features", "auto"),
+            "max_leaf_nodes": self.model_params.get("max_leaf_nodes", None),
+            "max_samples": self.model_params.get("max_samples", None),
+            "min_samples_split": self.model_params.get("min_samples_split", 2),
+            "min_samples_leaf": self.model_params.get("min_samples_leaf", 1),
+            "min_weight_fraction_leaf": self.model_params.get(
+                "min_weight_fraction_leaf", 0.0
+            ),
+            "n_estimators": self.model_params.get("n_estimators", 100),
+            "oob_score": self.model_params.get("oob_score", False),
+            "random_state": self.model_params.get("random_state", 42),
+        }

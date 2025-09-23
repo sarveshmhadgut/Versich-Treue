@@ -1,8 +1,8 @@
 import sys
-import numpy as np
-import pandas as pd
+from numpy import c_
 from halo import Halo
 from src.logger import logging
+from pandas import DataFrame, concat
 from src.exception import MyException
 from imblearn.combine import SMOTEENN
 from sklearn.pipeline import Pipeline
@@ -52,7 +52,7 @@ class DataTransformation:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _drop_features(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _drop_features(self, df: DataFrame) -> DataFrame:
         """
         Drop unwanted features from the dataframe as per schema.
 
@@ -74,7 +74,7 @@ class DataTransformation:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _label_encoding(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _label_encoding(self, df: DataFrame) -> DataFrame:
         """
         Apply label encoding to specified features.
 
@@ -99,7 +99,7 @@ class DataTransformation:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _onehot_encoding(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _onehot_encoding(self, df: DataFrame) -> DataFrame:
         """
         Apply one-hot encoding to specified features.
 
@@ -120,17 +120,17 @@ class DataTransformation:
                     df[feature] = df[feature].astype(str)
                     encoded = oh_encoder.fit_transform(df[[feature]])
                     col_names = oh_encoder.get_feature_names_out([feature])
-                    encoded_df = pd.DataFrame(
+                    encoded_df = DataFrame(
                         encoded, columns=col_names, index=df.index
                     ).astype(int)
-                    df = pd.concat([df.drop(columns=[feature]), encoded_df], axis=1)
+                    df = concat([df.drop(columns=[feature]), encoded_df], axis=1)
 
             return df
 
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _rename_features(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _rename_features(self, df: DataFrame) -> DataFrame:
         """
         Rename dataframe features according to schema config.
 
@@ -154,7 +154,7 @@ class DataTransformation:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _float_to_int(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _float_to_int(self, df: DataFrame) -> DataFrame:
         """
         Convert all float columns in dataframe to integer.
 
@@ -214,17 +214,14 @@ class DataTransformation:
             DataTransformationArtifacts: Artifacts generated after transformation.
         """
         try:
-            logging.info("Starting data transformation process...")
-
             train_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.train_filepath
             )
-            logging.info("Training data read.")
 
             test_df = read_csv_file(
                 filepath=self.data_ingestion_artifacts.test_filepath
             )
-            logging.info("Testing data read.")
+            logging.info("Training & testing data read.")
 
             target_features = self.schema_config.get("target_features", [])
             logging.info(f"Target features identified: {target_features}")
@@ -268,20 +265,20 @@ class DataTransformation:
 
             smoteenn = SMOTEENN(sampling_strategy="minority")
 
-            with Halo(text="Over-sampling train data...", spinner="dots") as spinner:
+            with Halo(text="Over-sampling train data...", spinner="dots"):
                 final_train_inputs, final_train_targets = smoteenn.fit_resample(
                     X=train_input_arr, y=train_target_df.values.ravel()
                 )
-                logging.info("Training data over-sampled")
+            logging.info("Training data over-sampled")
 
-            with Halo(text="Over-sampling test data...", spinner="dots") as spinner:
+            with Halo(text="Over-sampling test data...", spinner="dots"):
                 final_test_inputs, final_test_targets = smoteenn.fit_resample(
                     X=test_input_arr, y=test_target_df.values.ravel()
                 )
-                logging.info("Testing data over-sampled")
+            logging.info("Testing data over-sampled")
 
-            train_array = np.c_[final_train_inputs, final_train_targets]
-            test_array = np.c_[final_test_inputs, final_test_targets]
+            train_array = c_[final_train_inputs, final_train_targets]
+            test_array = c_[final_test_inputs, final_test_targets]
 
             save_object(
                 preprocessor,
@@ -293,19 +290,17 @@ class DataTransformation:
                 np_array=train_array,
                 filepath=self.data_transformation_config.data_transformation_train_array_filepath,
             )
-            logging.info("Training array saved")
 
             save_numpy_array(
                 np_array=test_array,
                 filepath=self.data_transformation_config.data_transformation_test_array_filepath,
             )
-            logging.info("Testing array saved")
+            logging.info("Training & testing array saved")
 
-            logging.info("Data transformation process completed.")
             return DataTransformationArtifacts(
                 data_transformation_object_filepath=self.data_transformation_config.data_transformation_object_filepath,
-                data_transformation_test_filepath=self.data_transformation_config.data_transformation_test_array_filepath,
-                data_transformation_train_filepath=self.data_transformation_config.data_transformation_train_array_filepath,
+                data_transformation_test_array_filepath=self.data_transformation_config.data_transformation_test_array_filepath,
+                data_transformation_train_array_filepath=self.data_transformation_config.data_transformation_train_array_filepath,
             )
 
         except Exception as e:

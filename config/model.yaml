@@ -1,0 +1,14 @@
+bootstrap: True
+class_weight: null
+criterion: entropy
+max_depth: 20
+max_features: sqrt
+max_leaf_nodes: 10
+max_samples: null
+min_samples_split: 10
+min_samples_leaf: 2
+min_weight_fraction_leaf: 0.10
+n_estimators: 300
+oob_score: True
+random_state: 42
+threshold_accuracy: 0.6
