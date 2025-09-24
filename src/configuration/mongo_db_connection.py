@@ -3,12 +3,10 @@ import sys
 import certifi
 import pymongo
 from dotenv import load_dotenv
-from src.logger import logging
 from typing import Optional, Any
 from src.exception import MyException
 from src.constants import DATABASE_NAME, MONGODB_CONNECTION_URL
 
-load_dotenv()
 ca: Any = certifi.where()
 
 
@@ -26,6 +24,7 @@ class MongoDBClient:
             MyException: If connection URL is not found or connection to MongoDB fails.
         """
         try:
+            load_dotenv()
             if MongoDBClient.client is None:
                 connection_url: str = os.getenv(MONGODB_CONNECTION_URL)
 
@@ -38,13 +37,10 @@ class MongoDBClient:
                 MongoDBClient.client: pymongo.MongoClient = pymongo.MongoClient(
                     connection_url, tlsCAFile=ca
                 )
-                logging.info("MongoDB client initialized .")
 
             self.client: Any = MongoDBClient.client
-            logging.info("Connected to client")
 
             self.database: Any = self.client[database_name]
-            logging.info(f"Connected to database: {database_name}")
 
         except Exception as e:
             raise MyException(e, sys) from e

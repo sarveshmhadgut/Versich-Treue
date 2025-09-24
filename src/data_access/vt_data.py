@@ -2,7 +2,6 @@ import sys
 from halo import Halo
 from numpy import nan
 from pandas import DataFrame
-from src.logger import logging
 from typing import Optional, Any
 from src.exception import MyException
 from src.constants import DATABASE_NAME
@@ -43,30 +42,21 @@ class VTData:
 
             if database_name is None:
                 collection: Any = self.client.database[collection_name]
-                logging.info(
-                    f"Using default database to access collection '{collection_name}'."
-                )
+
             else:
                 collection: Any = self.client.database.client[database_name][
                     collection_name
                 ]
-                logging.info(
-                    f"Using database '{database_name}' to access collection '{collection_name}'."
-                )
 
             with Halo(text="Fetching records...", spinner="dots"):
                 data: list = list(collection.find())
 
             df: DataFrame = DataFrame(data)
-            logging.info(f"Records fetched with shape: {df.shape}")
 
             if "_id" in df.columns:
                 df.drop(columns=["_id"], inplace=True, axis=1)
-                logging.info("'_id'dropped  column from DataFrame.")
 
             df.replace({"na": nan}, inplace=True)
-            logging.info("'na' replaced with np.nan in DataFrame.")
-
             return df
 
         except Exception as e:

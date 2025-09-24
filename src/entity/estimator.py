@@ -2,7 +2,6 @@ import sys
 from numpy import ndarray
 from pandas import DataFrame
 from typing import Dict, Any
-from src.logger import logging
 from src.exception import MyException
 from sklearn.pipeline import Pipeline
 
@@ -126,7 +125,6 @@ class Model:
         try:
             return f"{type(self.trained_model).__name__}()"
         except Exception as e:
-            logging.error(f"Error in __repr__: {e}")
             return "Model()"
 
     def __str__(self) -> str:
@@ -139,5 +137,4 @@ class Model:
         try:
             return f"{type(self.trained_model).__name__}()"
         except Exception as e:
-            logging.error(f"Error in __str__: {e}")
             return "Model()"

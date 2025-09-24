@@ -4,7 +4,6 @@ import json
 from typing import Any
 from yaml import safe_load
 from datetime import datetime
-from src.logger import logging
 from src.exception import MyException
 from pandas import read_csv, DataFrame
 from dill import load as dill_load, dump as dill_dump
@@ -123,7 +122,6 @@ def save_object(obj: Any, filepath: str, **kwargs) -> None:
             dill_dump(obj, f, **kwargs)
 
     except Exception as e:
-        logging.error(f"Error saving object: {e}")
         raise MyException(e, sys) from e
 
 
@@ -147,7 +145,6 @@ def load_numpy_array(filepath: str, **kwargs) -> Any:
         return arr
 
     except Exception as e:
-        logging.error(f"Error loading numpy array: {e}")
         raise MyException(e, sys) from e
 
 
@@ -188,5 +185,4 @@ def save_as_json(data: dict, filepath: str, **kwargs) -> None:
         with open(filepath, "w") as f:
             json.dump(data, f, **kwargs)
     except Exception as e:
-        logging.error(f"Error saving dict as JSON: {e}")
         raise MyException(e, sys) from e
