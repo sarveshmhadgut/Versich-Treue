@@ -154,26 +154,6 @@ class DataTransformation:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def _float_to_int(self, df: DataFrame) -> DataFrame:
-        """
-        Convert all float columns in dataframe to integer.
-
-        Args:
-            df (pd.DataFrame): Input dataframe.
-
-        Returns:
-            pd.DataFrame: Dataframe with floats converted to int.
-        """
-        try:
-            float_cols = df.select_dtypes(include=["float"]).columns
-            for col in float_cols:
-                df[col] = df[col].astype(int)
-
-            return df
-
-        except Exception as e:
-            raise MyException(e, sys) from e
-
     def get_data_transformer(self) -> Pipeline:
         """
         Create and return the data transformation pipeline including scaling.

@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from halo import Halo
 from pandas import DataFrame
 from src.logger import logging
@@ -95,13 +96,16 @@ class ModelTraining:
             y_hat_proba = classifier.predict_proba(X=X_test)
 
             metrics = {
-                "accuracy": accuracy_score(y_true=y_test, y_pred=y_hat),
-                "precision": precision_score(y_true=y_test, y_pred=y_hat),
-                "recall": recall_score(y_true=y_test, y_pred=y_hat),
-                "log_loss_": log_loss(y_true=y_test, y_pred=y_hat_proba),
-                "f1_score_": f1_score(y_true=y_test, y_pred=y_hat),
-                "roc_auc": roc_auc_score(y_true=y_test, y_score=y_hat_proba[:, 1]),
+                "accuracy": round(accuracy_score(y_true=y_test, y_pred=y_hat), 5),
+                "precision": round(precision_score(y_true=y_test, y_pred=y_hat), 5),
+                "recall": round(recall_score(y_true=y_test, y_pred=y_hat), 5),
+                "log_loss_": round(log_loss(y_true=y_test, y_pred=y_hat_proba), 5),
+                "f1_score_": round(f1_score(y_true=y_test, y_pred=y_hat), 5),
+                "roc_auc": round(
+                    roc_auc_score(y_true=y_test, y_score=y_hat_proba[:, 1]), 5
+                ),
             }
+
             return metrics
 
         except Exception as e:
@@ -149,11 +153,11 @@ class ModelTraining:
                 error_msg = f"Model accuracy {metrics['accuracy']:.4f} below threshold {self.model_training_config.threshold_accuracy}"
                 raise MyException(error_msg, sys)
 
-            trained_model = Model(preprocessor=preprocessor, trained_model=classifier)
+            pipeline = Model(preprocessor=preprocessor, trained_model=classifier)
             logging.info("Trained model fetched")
 
             save_object(
-                obj=trained_model,
+                obj=pipeline,
                 filepath=self.model_training_config.trained_model_filepath,
             )
             logging.info("Trained model saved")

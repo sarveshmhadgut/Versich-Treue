@@ -1,7 +1,7 @@
 import sys
+from halo import Halo
+from typing import Dict
 from numpy import ndarray
-from pandas import DataFrame
-from typing import Dict, Any
 from src.exception import MyException
 from sklearn.pipeline import Pipeline
 
@@ -94,7 +94,7 @@ class Model:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def predict(self, df: DataFrame) -> ndarray:
+    def predict(self, test: ndarray) -> ndarray:
         """
         Make predictions on input data using the preprocessing pipeline and trained model.
 
@@ -108,9 +108,8 @@ class Model:
             MyException: For prediction errors during preprocessing or model inference.
         """
         try:
-            transformed_features = self.preprocessor.transform(df)
-            predictions = self.trained_model.predict(transformed_features)
-            return predictions
+            y_hat = self.trained_model.predict(test)
+            return y_hat
 
         except Exception as e:
             raise MyException(e, sys) from e

@@ -50,12 +50,13 @@ class DataIngestion:
                 collection_name=self.data_ingestion_config.collection_name
             )
 
-            os.makedirs(self.data_ingestion_config.feature_store_dirpath, exist_ok=True)
-            feature_store_path = os.path.join(
-                self.data_ingestion_config.feature_store_dirpath, "data.csv"
+            feature_store_dir = os.path.dirname(
+                self.data_ingestion_config.data_filepath
             )
-
-            save_df_as_csv(df=df, filepath=feature_store_path, index=False)
+            os.makedirs(feature_store_dir, exist_ok=True)
+            save_df_as_csv(
+                df=df, filepath=self.data_ingestion_config.data_filepath, index=False
+            )
 
             return df
 
@@ -76,7 +77,10 @@ class DataIngestion:
             train_data, test_data = train_test_split(
                 df, test_size=self.data_ingestion_config.test_size, random_state=42
             )
-            os.makedirs(self.data_ingestion_config.data_ingested_dirpath, exist_ok=True)
+            ingested_dir = os.path.dirname(
+                self.data_ingestion_config.train_data_filepath
+            )
+            os.makedirs(ingested_dir, exist_ok=True)
 
             train_path: str = self.data_ingestion_config.train_data_filepath
             test_path: str = self.data_ingestion_config.test_data_filepath

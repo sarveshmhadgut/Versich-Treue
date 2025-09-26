@@ -1,10 +1,9 @@
 import os
 import sys
-from pandas import Series, DataFrame
+from typing import Optional
+from pandas import DataFrame
 from src.exception import MyException
-from sklearn.base import BaseEstimator
-from typing import Any, Optional, Union
-from src.configuration.aws_connection import S3
+from src.entity.estimator import Model
 from src.cloud_storage.aws_storage import SimpleStorageService
 
 
@@ -37,7 +36,7 @@ class S3Estimator:
             self.bucket_name: str = bucket_name
             self.model_filepath: str = model_filepath
             self.s3: SimpleStorageService = SimpleStorageService()
-            self.fetched_model: Optional[Any] = None
+            self.remote_model: Model = None
 
         except Exception as e:
             raise MyException(e, sys) from e
@@ -65,7 +64,7 @@ class S3Estimator:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def load_model(self) -> Any:
+    def load_model(self) -> Model:
         """
         Load the machine learning model from S3.
 
@@ -77,25 +76,9 @@ class S3Estimator:
             MyException: If model file does not exist in S3
         """
         try:
-            if not self.s3_model_found():
-                raise MyException(e, sys)
-
-            if "/" in self.model_filepath:
-                model_dirpath = os.path.dirname(self.model_filepath)
-                model_filename = os.path.basename(self.model_filepath)
-
-            else:
-                model_dirpath = None
-                model_filename = self.model_filepath
-
-            model = self.s3.load_model(
-                model_filename=model_filename,
-                model_dirpath=model_dirpath,
-                bucket_name=self.bucket_name,
+            return self.s3.load_model(
+                bucket_name=self.bucket_name, model_filepath=self.model_filepath
             )
-
-            return model
-
         except Exception as e:
             raise MyException(e, sys) from e
 
@@ -131,7 +114,7 @@ class S3Estimator:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def predict(self, df: DataFrame) -> Union[Series, DataFrame]:
+    def predict(self, X: DataFrame):
         """
         Make predictions using the S3-stored model.
 
@@ -139,32 +122,20 @@ class S3Estimator:
         then uses it to make predictions on the provided data.
 
         Args:
-            df (pd.DataFrame): Input data for making predictions
+            X (pd.DataFrame): Input data for making predictions
 
         Returns:
-            Union[pd.Series, pd.DataFrame]: Model predictions
+            pd.DataFrame: Model predictions
 
         Raises:
             MyException: If model loading or prediction fails
-            ValueError: If input DataFrame is empty or invalid
         """
         try:
-            if df.empty:
-                raise ValueError("Input DataFrame cannot be empty")
+            if not self.remote_model:
+                self.remote_model = self.load_model()
 
-            if not self.fetched_model:
-                self.fetched_model = self.load_model()
-
-            if not hasattr(self.fetched_model, "predict"):
-                raise AttributeError(
-                    f"Loaded model of type '{type(self.fetched_model)}' does not have a 'predict' method"
-                )
-
-            predictions = self.fetched_model.predict(df)
+            predictions = self.remote_model.predict(test=X)
             return predictions
-
-        except (ValueError, AttributeError) as e:
-            raise MyException(e, sys) from e
 
         except Exception as e:
             raise MyException(e, sys) from e

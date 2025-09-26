@@ -4,9 +4,9 @@ import pickle
 import pandas as pd
 from io import StringIO
 from src.logger import logging
+from typing import Union, List, Any
 from src.exception import MyException
 from mypy_boto3_s3.client import S3Client
-from typing import Optional, Union, List, Any
 from src.configuration.aws_connection import S3
 from mypy_boto3_s3.service_resource import Bucket, Object
 from mypy_boto3_s3.service_resource import S3ServiceResource
@@ -35,7 +35,7 @@ class SimpleStorageService:
             MyException: If S3 connection cannot be established
         """
         try:
-            s3_client = S3()
+            s3_client: S3 = S3()
             self.resource: S3ServiceResource = s3_client.resource
             self.client: S3Client = s3_client.client
 
@@ -139,23 +139,18 @@ class SimpleStorageService:
         """
         try:
             bucket = self.get_bucket(bucket_name=bucket_name)
-            file_objects = list(bucket.objects.filter(Prefix=filename))
+            file_objects = [
+                file_object for file_object in bucket.objects.filter(Prefix=filename)
+            ]
+            func = lambda x: x[0] if len(x) == 1 else x
+            file_objs = func(file_objects)
 
-            if not file_objects:
-                raise MyException(
-                    f"No objects found with prefix '{filename}' in bucket '{bucket_name}'",
-                    sys,
-                )
-
-            result = file_objects[0] if len(file_objects) == 1 else file_objects
-            return result
+            return file_objs
 
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def load_model(
-        self, model_filename: str, model_dirpath: Optional[str], bucket_name: str
-    ) -> Any:
+    def load_model(self, model_filepath: str, bucket_name: str) -> Any:
         """
         Load a pickled model from S3.
 
@@ -171,17 +166,16 @@ class SimpleStorageService:
             MyException: If model loading fails
         """
         try:
-            model_filepath = (
-                os.path.join(model_dirpath, model_filename)
-                if model_dirpath
-                else model_filename
-            )
 
             file_object = self.get_file_object(
                 filename=model_filepath, bucket_name=bucket_name
             )
 
             if isinstance(file_object, list):
+                if len(file_object) == 0:
+                    raise FileNotFoundError(
+                        f"S3 key prefix '{model_filepath}' not found in bucket '{bucket_name}'"
+                    )
                 file_object = file_object[0]
 
             model_content = self.read_object(object_name=file_object, decode=False)

@@ -49,16 +49,17 @@ class S3:
             load_dotenv()
 
             if not S3.client or not S3.resource:
-                access_key_id = os.getenv(AWS_ACCESS_KEY_ID)
-                secret_access_key = os.getenv(AWS_SECRET_ACCESS_KEY)
+                access_key = os.getenv(AWS_ACCESS_KEY_ID)
+                secret_key = os.getenv(AWS_SECRET_ACCESS_KEY)
+                region_name = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 
-                if not access_key_id:
+                if not access_key:
                     raise MyException(
                         f"AWS Access Key ID not found '{AWS_ACCESS_KEY_ID}'",
                         sys,
                     )
 
-                if not secret_access_key:
+                if not secret_key:
                     raise MyException(
                         f"AWS Secret Access Key not found '{AWS_SECRET_ACCESS_KEY}'",
                         sys,
@@ -66,15 +67,15 @@ class S3:
 
                 S3.client = boto3.client(
                     "s3",
-                    aws_access_key_id=access_key_id,
-                    aws_secret_access_key=secret_access_key,
+                    aws_access_key_id=access_key,
+                    aws_secret_access_key=secret_key,
                     region_name=region_name,
                 )
 
                 S3.resource = boto3.resource(
                     "s3",
-                    aws_access_key_id=access_key_id,
-                    aws_secret_access_key=secret_access_key,
+                    aws_access_key_id=access_key,
+                    aws_secret_access_key=secret_key,
                     region_name=region_name,
                 )
 
