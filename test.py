@@ -160,7 +160,7 @@ Validation script to check if transformation artifacts are generated correctly.
 #     success = validate_transformation_artifacts()
 #     sys.exit(0 if success else 1)
 
-from src.pipeline.training_pipeline import TrainPipeline
+# from src.pipeline.training_pipeline import TrainPipeline
 
-pipeline = TrainPipeline()
-pipeline.run_pipeline()
+# pipeline = TrainPipeline()
+# pipeline.run_pipeline()

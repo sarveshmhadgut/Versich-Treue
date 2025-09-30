@@ -1,4 +1,5 @@
 import sys
+from pandas import DataFrame
 from halo import Halo
 from typing import Dict
 from numpy import ndarray
@@ -99,6 +100,26 @@ class Model:
         Make predictions on input data using the preprocessing pipeline and trained model.
 
         Args:
+            df (np.ndarray): Input data for prediction.
+
+        Returns:
+            np.ndarray: Array of predictions.
+
+        Raises:
+            MyException: For prediction errors during preprocessing or model inference.
+        """
+        try:
+            y_hat = self.trained_model.predict(test)
+            return y_hat
+
+        except Exception as e:
+            raise MyException(e, sys) from e
+
+    def tranform_predict(self, test: DataFrame) -> ndarray:
+        """
+        Make predictions on input data using the preprocessing pipeline and trained model.
+
+        Args:
             df (pd.DataFrame): Input data for prediction.
 
         Returns:
@@ -108,6 +129,7 @@ class Model:
             MyException: For prediction errors during preprocessing or model inference.
         """
         try:
+            test = self.preprocessor.transform(test)
             y_hat = self.trained_model.predict(test)
             return y_hat
 
@@ -135,5 +157,5 @@ class Model:
         """
         try:
             return f"{type(self.trained_model).__name__}()"
-        except Exception as e:
+        except Exception:
             return "Model()"

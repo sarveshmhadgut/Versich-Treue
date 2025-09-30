@@ -1,5 +1,6 @@
 import os
 import sys
+from numpy import ndarray
 from typing import Optional
 from pandas import DataFrame
 from src.exception import MyException
@@ -114,7 +115,33 @@ class S3Estimator:
         except Exception as e:
             raise MyException(e, sys) from e
 
-    def predict(self, X: DataFrame):
+    def predict(self, X: ndarray):
+        """
+        Make predictions using the S3-stored model.
+
+        Automatically loads the model from S3 if not already cached,
+        then uses it to make predictions on the provided data.
+
+        Args:
+            X (np.ndarray): Input data for making predictions
+
+        Returns:
+            np.ndarray: Model predictions
+
+        Raises:
+            MyException: If model loading or prediction fails
+        """
+        try:
+            if not self.remote_model:
+                self.remote_model = self.load_model()
+
+            predictions = self.remote_model.predict(test=X)
+            return predictions
+
+        except Exception as e:
+            raise MyException(e, sys) from e
+
+    def tranform_predict(self, X: DataFrame):
         """
         Make predictions using the S3-stored model.
 
@@ -125,7 +152,7 @@ class S3Estimator:
             X (pd.DataFrame): Input data for making predictions
 
         Returns:
-            pd.DataFrame: Model predictions
+            np.ndarray: Model predictions
 
         Raises:
             MyException: If model loading or prediction fails
@@ -134,7 +161,7 @@ class S3Estimator:
             if not self.remote_model:
                 self.remote_model = self.load_model()
 
-            predictions = self.remote_model.predict(test=X)
+            predictions = self.remote_model.tranform_predict(test=X)
             return predictions
 
         except Exception as e:

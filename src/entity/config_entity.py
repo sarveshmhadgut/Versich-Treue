@@ -1,6 +1,6 @@
 import os
-from typing import Dict, Any, Optional
 from src.constants import *
+from typing import Dict, Any
 from dataclasses import dataclass, field
 from src.utils.main_utils import get_current_timestamp, read_yaml_file
 
@@ -282,3 +282,21 @@ class ModelDeploymentConfig:
 
     bucket_name: str = field(default=MODEL_BUCKET_NAME)
     s3_model_key_path: str = field(default=MODEL_FILENAME)
+
+
+@dataclass
+class OwnerClassifierConfig:
+    """
+    Configuration for the owner classifier model serving and inference.
+
+    This class manages configuration parameters for loading and using
+    the trained model for prediction tasks, including model file paths
+    and S3 storage settings for model retrieval.
+
+    Attributes:
+        model_filepath (str): File path or name for the trained model file
+        model_bucket_name (str): S3 bucket name containing the deployed model
+    """
+
+    model_filepath: str = field(default=MODEL_FILENAME)
+    model_bucket_name: str = field(default=MODEL_BUCKET_NAME)

@@ -35,7 +35,9 @@ drop_features:
 - id
 
 rename_features:
-- "Vehicle_Age_> 2 Year$Vehicle_Age_gt_2_Year"
+- "Vehicle_Age_1-2 Year$Vehicle_Age_1_2_Year"
+- "Vehicle_Age_< 1 Year$Vehicle_Age_lt_1_Year"
+- "Vehicle_Age_> 2 Years$Vehicle_Age_gt_2_Years"
 
 label_encoding_features:
 - Gender

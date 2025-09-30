@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Versich Treue</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="title-container">
+        <h1 class="main-title">
+            <span class="title-highlight">Versich Treue</span>
+            <br>
+            <span class="subtitle">Vehicle Insurance Predictor</span>
+        </h1>
+    </div>
+
+    <div class="container">
+
+
+        {% if context != "Rendering" %}
+        <div class="result {% if 'unlikely' in context.lower() %}negative{% elif 'Error' in context %}error{% endif %}">
+            {{ context }}
+        </div>
+        {% endif %}
+
+        <!-- Train Model Section -->
+
+
+        <form method="post" action="/">
+            <div class="form-grid">
+                <!-- Column 1 -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="Age">Age:</label>
+                        <input type="number" name="Age" id="Age" required min="18" max="100"
+                            placeholder="Enter age (18-100)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Gender">Gender:</label>
+                        <select name="Gender" id="Gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Driving_License">Driving License:</label>
+                        <select name="Driving_License" id="Driving_License" required>
+                            <option value="">Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Region_Code">Region Code:</label>
+                        <input type="number" name="Region_Code" id="Region_Code" step="0.1" required
+                            placeholder="Enter region code">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Previously_Insured">Previously Insured:</label>
+                        <select name="Previously_Insured" id="Previously_Insured" required>
+                            <option value="">Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="Vehicle_Damage">Vehicle Damage:</label>
+                        <select name="Vehicle_Damage" id="Vehicle_Damage" required>
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Annual_Premium">Annual Premium:</label>
+                        <input type="number" name="Annual_Premium" id="Annual_Premium" step="0.01" required min="0"
+                            placeholder="Enter annual premium">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Policy_Sales_Channel">Policy Sales Channel:</label>
+                        <input type="number" name="Policy_Sales_Channel" id="Policy_Sales_Channel" step="0.1" required
+                            placeholder="Enter sales channel">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Vintage">Vintage - Days with company:</label>
+                        <input type="number" name="Vintage" id="Vintage" required min="1"
+                            placeholder="Enter vintage days">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Vehicle_Age_Category">Vehicle Age Category:</label>
+                        <select name="Vehicle_Age_Category" id="Vehicle_Age_Category" required>
+                            <option value="">Select Vehicle Age</option>
+                            <option value="lt_1_year">Less than 1 Year</option>
+                            <option value="1_2_year">1-2 Years</option>
+                            <option value="gt_2_years">Greater than 2 Years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Predict Insurance Interest</button>
+            <div class="train-section">
+                <button type="button" id="trainButton" class="train-button" onclick="trainModel()">
+                    <span class="button-text">Train Model</span>
+                    <span class="loading-spinner" style="display: none;">Training...</span>
+                </button>
+                <div id="trainResult" class="train-result" style="display: none;"></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript for Train Model functionality -->
+    <script>
+        async function trainModel() {
+            const trainButton = document.getElementById('trainButton');
+            const trainResult = document.getElementById('trainResult');
+            const buttonText = document.querySelector('.button-text');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+
+            // Show loading state
+            trainButton.disabled = true;
+            buttonText.style.display = 'none';
+            loadingSpinner.style.display = 'inline';
+            trainResult.style.display = 'none';
+
+            try {
+                // Make fetch request to train endpoint
+                const response = await fetch('/train', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+                    trainResult.innerHTML = `<div class="success-message">${result}</div>`;
+                    trainResult.className = 'train-result success';
+                } else {
+                    const errorText = await response.text();
+                    trainResult.innerHTML = `<div class="error-message">Training failed: ${errorText}</div>`;
+                    trainResult.className = 'train-result error';
+                }
+
+                trainResult.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error training model:', error);
+                trainResult.innerHTML = `<div class="error-message">Network error: ${error.message}</div>`;
+                trainResult.className = 'train-result error';
+                trainResult.style.display = 'block';
+            } finally {
+                trainButton.disabled = false;
+                buttonText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+            }
+        }
+    </script>
+    <script>
+        if (location.hostname === 'localhost') {
+            const link = document.querySelector('link[rel="stylesheet"]');
+            link.href = link.href + '?v=' + new Date().getTime();
+        }
+    </script>
+
+</body>
+
+</html>

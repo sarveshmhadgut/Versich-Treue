@@ -44,3 +44,7 @@ AWS_REGION: str = "AWS_DEFAULT_REGION"
 MODEL_EVALUATION_DIRNAME = "model_evaluation"
 MODEL_EVALUATION_THRESHOLD: str = 0.05
 MODEL_BUCKET_NAME: str = "versich-treue"
+
+# app
+APP_HOST = "localhost"
+APP_PORT = 8080

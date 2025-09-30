@@ -1,0 +1,448 @@
+:root {
+    --primary-bg: #0a0a0f;
+    --glass-bg: rgba(15, 15, 25, 0.4);
+    --text-primary: #fff;
+    --text-secondary: #b8b5d1;
+    --accent-color: #D1BDFF;
+    --success-color: #8fffe7;
+    --error-color: #f87171;
+    --negative-color: #ef4444;
+    --border-radius: 16px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Satoshi, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: var(--primary-bg);
+
+    background-image:
+        linear-gradient(rgba(10, 10, 15, 0.8), rgba(10, 10, 15, 0.8)),
+        url('https://lh3.googleusercontent.com/d/11C-tFdS7nW0FkNyuXSmSF-0oqiPQkcp-?nocache=1');
+
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: var(--text-primary);
+    padding: 20px;
+    line-height: 1.6;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+        padding: 10px;
+    }
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
+    pointer-events: none;
+    z-index: -1;
+}
+
+h1 {
+    color: #8fffe7;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+input,
+select {
+    all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: none;
+
+    -webkit-padding-start: 0;
+    -webkit-padding-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    display: block;
+    box-sizing: border-box;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.6);
+}
+
+input:focus,
+select:focus {
+    border-color: #8fffe7;
+    box-shadow:
+        0 0 0 2px #12FBCA44,
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 2.5rem;
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #fff;
+}
+
+/* Base button styling - shared by all buttons */
+.btn-base {
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: block;
+    margin: 1rem auto 0;
+    min-width: 220px;
+    font-family: inherit;
+    text-align: center;
+}
+
+.btn-base:disabled {
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Primary button (Predict button) */
+button,
+.btn-primary {
+    background: #8fffe7;
+    color: var(--primary-bg);
+}
+
+button:hover,
+.btn-primary:hover:not(:disabled) {
+    background: #000;
+    color: #8fffe7;
+    transform: translateY(-2px);
+}
+
+/* Secondary button (Train button) */
+.train-button,
+.btn-secondary {
+    background: #7bb0ff;
+    color: var(--primary-bg);
+}
+
+.train-button:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+    background: #000;
+    color: #7bb0ff;
+    transform: translateY(-2px);
+}
+
+/* Apply base styles to all buttons */
+button,
+.train-button {
+    @extend .btn-base; /* If using Sass/SCSS */
+    /* Or manually apply the same styles */
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: block;
+    margin: 1rem auto 0;
+    min-width: 220px;
+    font-family: inherit;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+button:disabled,
+.train-button:disabled {
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.result {
+    background: rgba(16, 185, 129, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0 0 2rem 0;
+    color: #8fffe7;
+    text-align: center;
+    font-weight: 500;
+    grid-column: 1 / -1;
+}
+
+.error {
+    background: rgba(248, 113, 113, 0.15) !important;
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    color: #fca5a5;
+}
+
+.negative {
+    background: rgba(242, 148, 0, 0.15) !important;
+    border-color: rgba(242, 148, 0, 0.4) !important;
+    color: #F29400;
+}
+
+.train-section {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.loading-spinner {
+    font-size: 0.9rem;
+    color: #7bb0ff;
+}
+
+.train-result {
+    background: rgba(16, 185, 129, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0 0 2rem 0;
+    color: #8fffe7;
+    text-align: center;
+    font-weight: 500;
+    grid-column: 1 / -1;
+    animation: slideIn 0.3s ease-out;
+}
+
+.train-result.success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+
+.train-result.error {
+    background: rgba(248, 113, 113, 0.15) !important;
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    color: #fca5a5;
+}
+
+.success-message,
+.error-message {
+    text-align: center;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    max-width: 1000px;
+
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--border-radius);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    color: #0CE3FE;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 1;
+}
+
+.main-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--border-radius);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.title-accent {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        max-width: 600px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-column {
+        gap: 0;
+    }
+
+    button,
+    .train-button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .train-section {
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+        margin: 10px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    input,
+    select {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.95rem;
+    }
+
+    button,
+    .train-button {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Add fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(25px)) {
+    .main-title {
+        background: rgba(15, 15, 25, 0.95);
+    }
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+    .container {
+        background: rgba(15, 15, 25, 0.95);
+    }
+
+    input,
+    select {
+        background: rgba(255, 255, 255, 0.15);
+    }
+}
