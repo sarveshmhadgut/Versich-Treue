@@ -46,5 +46,5 @@ MODEL_EVALUATION_THRESHOLD: str = 0.05
 MODEL_BUCKET_NAME: str = "versich-treue"
 
 # app
-APP_HOST = "localhost"
+APP_HOST = "0.0.0.0"
 APP_PORT = 8080
