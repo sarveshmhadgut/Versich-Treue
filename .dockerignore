@@ -1,0 +1,13 @@
+.env
+logs/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+test.py
+notebook/
+artifacts/
+README.md
+template.py
+__pycache__
+src.egg.-info/
