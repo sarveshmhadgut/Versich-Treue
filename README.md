@@ -35,27 +35,6 @@ An end-to-end MLOps pipeline for predicting vehicle insurance policy churn with 
 | Web Framework    | FastAPI                             |
 | Development      | virtualenv / pip                    |
 
-## Project Workflow
-
-```mermaid
-flowchart TD
-    subgraph Data_Pipeline
-        A[MongoDB Atlas] --> B[Data Ingestion]
-        B --> C[Data Validation]
-        C --> D[Data Transformation]
-        D --> E[Model Training]
-        E --> F[Model Evaluation]
-        F --> G[AWS S3 (Artifact Storage)]
-    end
-
-    subgraph CI_CD
-        G --> H[GitHub Actions]
-        H --> I[Docker Build]
-        I --> J[ECR Push]
-        J --> K[Deployment on EC2/ECS]
-    end
-````
-
 ## Directory Structure
 
 ```
