@@ -1,7 +1,7 @@
 :root {
     --primary-bg: #0a0a0f;
     --glass-bg: rgba(15, 15, 25, 0.4);
-    --text-primary: #fff;
+    --text-primary: #fff9e8;
     --text-secondary: #b8b5d1;
     --accent-color: #D1BDFF;
     --success-color: #8fffe7;
@@ -24,7 +24,7 @@ body {
 
     background-image:
         linear-gradient(rgba(10, 10, 15, 0.8), rgba(10, 10, 15, 0.8)),
-        url('https://lh3.googleusercontent.com/d/11C-tFdS7nW0FkNyuXSmSF-0oqiPQkcp-?nocache=1');
+        url('../VF_Mac.jpeg');
 
     background-size: cover;
     background-position: center center;
@@ -83,12 +83,12 @@ body::before {
 }
 
 h1 {
-    color: #8fffe7;
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2.5rem;
     font-weight: 600;
 }
+
 
 .form-grid {
     display: grid;
@@ -180,7 +180,6 @@ select:-moz-focusring {
     text-shadow: 0 0 0 #fff;
 }
 
-/* Base button styling - shared by all buttons */
 .btn-base {
     border: none;
     border-radius: 12px;
@@ -203,48 +202,43 @@ select:-moz-focusring {
     opacity: 0.6;
 }
 
-/* Primary button (Predict button) */
 button,
 .btn-primary {
-    background: #8fffe7;
+    background: #79d2ff;
     color: var(--primary-bg);
 }
 
-button:hover,
+button:hover:not(:disabled),
 .btn-primary:hover:not(:disabled) {
     background: #000;
-    color: #8fffe7;
+    color: #79d2ff;
     transform: translateY(-2px);
 }
 
-/* Secondary button (Train button) */
 .train-button,
 .btn-secondary {
-    background: #7bb0ff;
+    background: #ffd599;
     color: var(--primary-bg);
 }
 
 .train-button:hover:not(:disabled),
 .btn-secondary:hover:not(:disabled) {
     background: #000;
-    color: #7bb0ff;
+    color: #ffd599;
     transform: translateY(-2px);
 }
 
-/* Apply base styles to all buttons */
 button,
 .train-button {
-    @extend .btn-base; /* If using Sass/SCSS */
-    /* Or manually apply the same styles */
     border: none;
     border-radius: 12px;
-    padding: 1rem 1.5rem;
+    padding: 1rem;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: block;
-    margin: 1rem auto 0;
+    margin: 1rem auto;
     min-width: 220px;
     font-family: inherit;
     text-align: center;
@@ -292,7 +286,7 @@ button:disabled,
 
 .loading-spinner {
     font-size: 0.9rem;
-    color: #7bb0ff;
+    color: #79d2ff;
 }
 
 .train-result {
@@ -325,30 +319,6 @@ button:disabled,
 .success-message,
 .error-message {
     text-align: center;
-}
-
-.main-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    text-align: center;
-    margin: 1.5rem auto;
-    padding: 1rem;
-    max-width: 1000px;
-
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: var(--border-radius);
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
-    color: #0CE3FE;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-    letter-spacing: -0.01em;
-    position: relative;
-    z-index: 1;
 }
 
 .main-title::before {
@@ -429,7 +399,6 @@ button:disabled,
     }
 }
 
-/* Add fallback for browsers that don't support backdrop-filter */
 @supports not (backdrop-filter: blur(25px)) {
     .main-title {
         background: rgba(15, 15, 25, 0.95);
@@ -445,4 +414,33 @@ button:disabled,
     select {
         background: rgba(255, 255, 255, 0.15);
     }
+}
+
+.subtitle {
+    font-size: 2.25rem;
+    color: #ffd599;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    max-width: 1000px;
+    line-height: 1.2;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--border-radius);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    color: #79d2ff;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 1;
 }

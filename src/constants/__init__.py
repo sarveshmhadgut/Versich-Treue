@@ -43,7 +43,7 @@ AWS_REGION: str = "AWS_DEFAULT_REGION"
 # model evaluation
 MODEL_EVALUATION_DIRNAME = "model_evaluation"
 MODEL_EVALUATION_THRESHOLD: str = 0.05
-MODEL_BUCKET_NAME: str = "versich-treue"
+MODEL_BUCKET_NAME: str = "versich-treue-bucket"
 
 # app
 APP_HOST = "0.0.0.0"
