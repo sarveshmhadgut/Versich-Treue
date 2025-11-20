@@ -1,4 +1,4 @@
-# Versich Treue: Vehicle Insurance Prediction
+# Versich Treue – Vehicle Insurance Customer Attrition Prediction
 
 An end-to-end MLOps pipeline for predicting vehicle insurance policy churn with automated CI/CD deployment.
 
