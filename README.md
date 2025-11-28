@@ -1,6 +1,7 @@
 # Versich Treue – Vehicle Insurance Customer Attrition Prediction
 
-An end-to-end MLOps pipeline for predicting vehicle insurance policy churn with automated CI/CD deployment.
+Versich Treue – Vehicle Insurance Customer Attrition Prediction with automated CI/CD deployment.
+
 
 ## Table of Contents
 
@@ -45,18 +46,19 @@ versich-treue/
 │   └── workflows/
 │       └── aws.yaml
 ├── Dockerfile
-├── notebook/
+├── notebooks/
 ├── requirements.txt
 ├── setup.py
 ├── src/
 │   ├── __init__.py
-│   ├── aws_storage/
+│   ├── cloud_storage/
 │   ├── components/
 │   │   ├── data_ingestion.py
 │   │   ├── data_transformation.py
 │   │   ├── data_validation.py
 │   │   ├── model_evaluation.py
-│   │   └── model_trainer.py
+│   │   ├── model_training.py
+│   │   └── model_deployment.py
 │   ├── configuration/
 │   ├── constants/
 │   ├── data_access/
@@ -117,7 +119,7 @@ export $(cat .env | xargs)
 * Create free-tier cluster
 * Add secure DB user
 * Whitelist required IPs
-* Upload dataset using `notebook/mongoDB_demo.ipynb`
+* Upload dataset using `notebooks/mongoDB_test.ipynb`
 
 ### AWS
 
@@ -159,12 +161,12 @@ python3 app.py
 ### Access locally
 
 ```
-http://127.0.0.1:8080/
+http://localhost:8080/
 ```
 
 ### Predictions
 
 | Environment | URL                                            |
 | ----------- | ---------------------------------------------- |
-| Local       | [http://127.0.0.1:8080](http://127.0.0.1:8080) |
+| Local       | [http://localhost:8080](http://localhost:8080) |
 | Cloud       | http://<EC2_PUBLIC_IP>:8080                    |
