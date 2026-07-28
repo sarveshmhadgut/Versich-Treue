@@ -20,7 +20,7 @@ Versich Treue – Vehicle Insurance Customer Attrition Prediction with automated
 - **Database Integration**: MongoDB Atlas for scalable data storage
 - **Artifact Management**: AWS S3 for storing trained models
 - **Automated CI/CD**: GitHub Actions with Docker + ECR integration
-- **Cloud Deployment**: AWS EC2 / ECS / EKS deployment
+- **Cloud Deployment**: AWS EC2 deployment
 - **Containerization**: Portable builds using Docker
 - **Prediction API**: FastAPI web service for inference
 
@@ -34,7 +34,6 @@ Versich Treue – Vehicle Insurance Customer Attrition Prediction with automated
 | Cloud Services   | AWS (S3, EC2, ECR, IAM)            |
 | CI/CD            | GitHub Actions, Docker              |
 | Web Framework    | FastAPI                             |
-| Development      | virtualenv / pip                    |
 
 ## Directory Structure
 
